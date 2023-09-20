@@ -38,7 +38,6 @@ with Image.open(fp=args.filename) as im:
     arr = np.array(im)
     im = Image.fromarray(normalize(arr).astype('uint8'), 'RGBA')
     im = im.convert(mode='L')
-    im.show()
     with open('out.txt', 'w') as out:
         for h in range(im.height):
             for w in range(im.width):
