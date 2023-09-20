@@ -1,13 +1,15 @@
-from sys import argv
 from PIL import Image
 import numpy as np
+from argparse import ArgumentParser
 
-if len(argv) < 2:
-    print('No file was supplied')
-    exit(-1)
-elif len(argv) > 2:
-    print('More than one file were supplied')
-    exit(-1)
+parser = ArgumentParser(
+    prog='image2ascii',
+    description='A simple and dumb image-to-ASCII converter'
+)
+parser.add_argument('filename', metavar='FILENAME', type=str)
+parser.add_argument('target_width', metavar='WIDTH', type=int)
+parser.add_argument('target_height', metavar='HEIGHT', type=int)
+args = parser.parse_args()
 
 char_ramp = r"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'."
 
@@ -29,12 +31,14 @@ def normalize(arr):
     return arr
 
 
-with Image.open(fp=argv[1]) as im:
-    im = im.resize(size=ratio_fit(im.width, im.height, 84, 48))
+with Image.open(fp=args.filename) as im:
+    width, height = args.target_width, args.target_height
+    im = im.resize(size=ratio_fit(im.width, im.height, width, height))
     im = im.convert(mode='RGBA')
     arr = np.array(im)
     im = Image.fromarray(normalize(arr).astype('uint8'), 'RGBA')
     im = im.convert(mode='L')
+    im.show()
     with open('out.txt', 'w') as out:
         for h in range(im.height):
             for w in range(im.width):
